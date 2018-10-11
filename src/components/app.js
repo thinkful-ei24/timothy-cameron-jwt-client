@@ -26,18 +26,19 @@ export class App extends React.Component {
         if(this.props.loggedIn){
             this.inactivityTimeout = setTimeout(
                 () => {
-                    setTimeout(
+                    this.clearAuthTimeout = setTimeout(
                         () => this.props.dispatch(clearAuth()),
-                        60 * 1000
+                        5 * 1000
                     );
                     const confirmed = window.confirm('Logging out in one minute');
                     if(confirmed) {
                         this.props.dispatch(clearAuth());
                     } else {
+                        clearTimeout(this.clearAuthTimeout);
                         this.forceUpdate();
                     }
                 },
-                4 * 60 * 1000
+                4 * 1000
             );
         }
 
