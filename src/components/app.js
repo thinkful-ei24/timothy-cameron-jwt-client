@@ -6,7 +6,7 @@ import HeaderBar from './header-bar';
 import LandingPage from './landing-page';
 import Dashboard from './dashboard';
 import RegistrationPage from './registration-page';
-import {refreshAuthToken} from '../actions/auth';
+import {refreshAuthToken, clearAuth} from '../actions/auth';
 
 export class App extends React.Component {
     componentDidUpdate(prevProps) {
@@ -17,6 +17,30 @@ export class App extends React.Component {
             // Stop refreshing when we log out
             this.stopPeriodicRefresh();
         }
+
+        if(this.inactivityTimeout){
+            clearTimeout(this.inactivityTimeout);
+        }
+
+        
+        if(this.props.loggedIn){
+            this.inactivityTimeout = setTimeout(
+                () => {
+                    setTimeout(
+                        () => this.props.dispatch(clearAuth()),
+                        60 * 1000
+                    );
+                    const confirmed = window.confirm('Logging out in one minute');
+                    if(confirmed) {
+                        this.props.dispatch(clearAuth());
+                    } else {
+                        this.forceUpdate();
+                    }
+                },
+                4 * 60 * 1000
+            );
+        }
+
     }
 
     componentWillUnmount() {
